@@ -5,10 +5,10 @@ var deleteSchedule = require('./deleteschedule');
 var updateSchedule = require('./updateschedule');
 var showSchedule = require('./showschedule');
 
-router.use('/createschedule', createschedule);
-router.use('/deleteschdule', deleteschedule);
-router.use('/updateschedule', updateschedule);
-router.use('/showschedule', showschedule);
+router.use('/createschedule', createSchedule);
+router.use('/deleteschedule', deleteSchedule);
+router.use('/updateschedule', updateSchedule);
+router.use('/showschedule', showSchedule);
 
 
 

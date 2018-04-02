@@ -115,7 +115,7 @@ router.post('/', (req,res) => {
 								"user_data":{
                   "user_id":row.insertId,
 									"email":userData[0].email,
-									"coco_nickname":userData[0].nickname
+									"nickname":userData[0].nickname
 								}
 							}
 						});

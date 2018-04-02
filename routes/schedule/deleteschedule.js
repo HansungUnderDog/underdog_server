@@ -4,22 +4,15 @@ const mysql = require('mysql');
 const pool = require('../../config/dbpool');
 const async = require('async');
 const crypto = require('crypto');
-const date = require('date-utils');
 
-console.log("deletecomment")
+console.log("deletecomment");
 
 router.post('/', (req,res) => {
-	let article_id = req.body.article_id
+	let schedule_id = req.body.schedule_id;
 	let user_id = req.session.user_id;
-	let comment_id = req.body.comment_id;
-	let dt = new Date();
-	let comment_written_time = dt.toFormat('YYYY-MM-DD HH24:MI:SS');
 	let query = {
-		checkQuery: 'SELECT article_id, user_id, comment_id FROM article_comment WHERE (article_id, user_id, comment_id) = (?, ?, ?)',
-		deleteQuery: 'DELETE FROM article_comment WHERE (article_id, user_id, comment_id) = (?, ?, ?)',
-		selectQuery: 'SELECT comment_id, article_id, main_community_type, nickname, comment_id, comment_content, comment_written_time, users.user_id ' +
-		'FROM article_comment INNER JOIN users ON article_comment.user_id=users.user_id WHERE (article_id = ?)',
-		countQuery: 'UPDATE article_list SET coco_comment_count = coco_comment_count-1 WHERE crawling_article_id=?'
+		checkQuery: 'SELECT schedule_id, user_id FROM schedule WHERE (schedule_id, user_id) = (?, ?)',
+		deleteQuery: 'DELETE FROM schedule WHERE (schedule_id, user_id) = (?, ?)'
 	};
 	console.log("fjfjfj");
 	let taskArray = [
@@ -28,7 +21,7 @@ router.post('/', (req,res) => {
 		if(req.session.user_id){
 			callback(null);
 		}else{
-			callback("0")
+			callback("0");
 			res.status(500).send({
 				stat : 0,
 			});
@@ -51,7 +44,7 @@ router.post('/', (req,res) => {
 		console.log("hi");
 		let checkQuery = query.checkQuery;
 		console.log(checkQuery);
-		connection.query(checkQuery, [article_id, user_id, comment_id], (err, userData) => {
+		connection.query(checkQuery, [schedule_id, user_id], (err, userData) => {
 			console.log("in");
 			if(err){
 				console.log(err);
@@ -68,30 +61,13 @@ router.post('/', (req,res) => {
 				connection.release();
 			}else{
 				console.log("hi");
-				callback(null, connection);
+				callback(null, connection, userData);
 			}
 		});
 	},
-	(connection, callback) => {
-		let countQuery = query.countQuery;
-		connection.query(countQuery, article_id, (err) => {
-			if(err){
-				res.status(501).send({
-					stat: "null error "
-				});
-				connection.release();
-				callback("comment count minus error");
-			}else{
-				callback(null, connection);
-			}
-		});
-	},
-	(connection, callback) => {
+	(connection, userData, callback) => {
 		let deleteQuery = query.deleteQuery;
-		connection.query(deleteQuery, [article_id, user_id, comment_id], (err) => {
-			console.log(user_id);
-			console.log(comment_id);
-			console.log(comment_written_time);
+		connection.query(deleteQuery, [schedule_id, user_id], (err, row) => {
 			if(err){
 				res.status(401).send({
 					stat: "delete error"
@@ -99,31 +75,16 @@ router.post('/', (req,res) => {
 				connection.release();
 				callback("delete error");
 			}else{
-				let selectQuery = query.selectQuery;
-				connection.query(selectQuery, article_id, (err, rows) => {
-					if(err){
-						console.log(err);
-						res.status(401).send({
-							stat:"error"
-						});
-						connection.release();
-						callback("select error", null);
-					}else{
 						res.status(201).send({
 							stat: "delete success",
 							data: {
-								"article_id" : article_id,
-								"user_id" : user_id,
-								"comment_id" : comment_id,
-							},
-							list: rows
+								"schedule_id" : userData[0].schedule_id,
+								"user_id" : userData[0].user_id
+							}
 						});
 						connection.release();
 						callback("delete success", null);
 					}
-				});
-
-			}
 		});
 	}
 	];

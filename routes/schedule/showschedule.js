@@ -8,12 +8,21 @@ console.log("showschedule");
 
 router.get('/', (req, res) => {
 console.log("asd");
-  var test = req.param('article_id');
-  console.log(test);
-  var object = [];
+  var schedule_id = req.param('schedule_id');
+  var user_id = req.session.user_id;
 	var taskArray = [
+    (callback) =>{
+  		console.log(req.session.user_id);
+  		if(req.session.user_id){
+  			callback(null);
+  		}else{
+  			callback("0");
+  			res.status(500).send({
+  				stat : 0,
+  			});
+  		}
+  	},
     (callback) => {
-
 			pool.getConnection((err, connection) => {
 				if(err){
 					res.status(500).send({
@@ -24,9 +33,8 @@ console.log("asd");
 			});
 		},
     (connection, callback) => {
-			var selectAtdQuery = 'SELECT comment_id, article_id, main_community_type, nickname, comment_id, comment_content, comment_written_time, users.user_id '+
-				'FROM article_comment INNER JOIN users ON article_comment.user_id=users.user_id WHERE (article_id = ? )';
-			connection.query(selectAtdQuery, test, (err, rows) => {
+			var selectAtdQuery = 'SELECT schedule_id, type, app_person, place, content, date, cycle, user_id FROM schedule WHERE (schedule_id, user_id)=(?, ?)';
+			connection.query(selectAtdQuery, [schedule_id, user_id], (err, rows) => {
 				if(err){
 					console.log(err);
 					res.status(500).send({
