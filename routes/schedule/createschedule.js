@@ -4,7 +4,7 @@ const mysql = require('mysql');
 const pool = require('../../config/dbpool');
 const async = require('async');
 const crypto = require('crypto');
-const date = require('date-utils');
+var moment = require('moment');
 
 router.post('/', (req,res) => {
 	let user_id = req.session.user_id;
@@ -12,8 +12,7 @@ router.post('/', (req,res) => {
 	let app_person = req.body.app_person;
 	let place = req.body.place;
 	let content = req.body.content;
-	let dt = new Date();
-	let date = dt.toFormat('YYYY-MM-DD HH24:MI:SS');
+	let date = moment().toDate();
 	let cycle = req.body.cycle;
 	let query = {
 		insertQuery: 'INSERT INTO schedule (type, app_person, place, content, date, cycle, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',

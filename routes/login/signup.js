@@ -112,11 +112,9 @@ router.post('/', (req,res) => {
 						res.status(201).send({
 							stat: "success",
 							data: {
-								"user_data":{
-                  "user_id":row.insertId,
-									"email":userData[0].email,
-									"nickname":userData[0].nickname
-								}
+                "user_id":row.insertId,
+								"email":userData[0].email,
+								"nickname":userData[0].nickname
 							}
 						});
 						req.session.user_id = userData[0].user_id;
