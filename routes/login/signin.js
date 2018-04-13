@@ -29,7 +29,10 @@ router.post('/', (req, res) => {
 	},
 	(callback) => {
 		pool.getConnection((err, connection) => {
-			if(err) callback("connection error : " + err, null);
+			if(err){
+				callback("connection error : " + err, null);
+				connection.release();
+			}
 			else callback(null, connection);
 		});
 	},
@@ -44,6 +47,7 @@ router.post('/', (req, res) => {
 				callback("mysql proc error ", null);
 			}else{
 				callback(null, userData);
+				connection.release();
 			}
 		});
 	},
@@ -51,7 +55,7 @@ router.post('/', (req, res) => {
 		if(userData.length === 0){
 			console.log(userData);
 			res.status(501).send({
-				stat: "login failll"
+				stat: "nonidfail"
 			});
 			callback("login failll", null);
 		}else{
@@ -81,9 +85,9 @@ router.post('/', (req, res) => {
     callback("login success", null);
 }else{
 	res.status(501).send({
-		stat: "login fail"
+		stat: "pwdfail"
 	});
-	callback("login fail", null);
+	callback("pwdfail", null);
 }
 }
 ];
