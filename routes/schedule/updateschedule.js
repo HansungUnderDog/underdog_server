@@ -9,15 +9,15 @@ const crypto = require('crypto');
 router.post('/', (req, res) => {
   let user_id = req.session.user_id;
   let schedule_id = req.body.schedule_id;
-  let type = req.body.type;
+  let types = req.body.types;
   let app_person = req.body.app_person;
   let place = req.body.place;
   let content = req.body.content;
   //let date = moment().toDate();
   let cycle = req.body.cycle;
   let query = {
-    checkQuery: 'SELECT schedule_id, type, app_person, place, content, cycle, user_id FROM schedule WHERE (schedule_id, user_id) = (?, ?)',
-    updateQuery: 'UPDATE schedule SET type=?, app_person=?, place=?, content=?, date=?, cycle=? WHERE (schedule_id, user_id) = (?, ?)'
+    checkQuery: 'SELECT schedule_id, types, app_person, place, content, cycle, user_id FROM schedule WHERE (schedule_id, user_id) = (?, ?)',
+    updateQuery: 'UPDATE schedule SET types=?, app_person=?, place=?, content=?, dates=?, cycle=? WHERE (schedule_id, user_id) = (?, ?)'
   };
   let taskArray=[
     (callback) => {
@@ -68,7 +68,7 @@ router.post('/', (req, res) => {
     },
     (connection, row, callback) => {
       let updateQuery = query.updateQuery;
-      connection.query(updateQuery, [type, app_person, place, content, cycle, schedule_id, user_id], (err,rows) => {
+      connection.query(updateQuery, [types, app_person, place, content, cycle, schedule_id, user_id], (err,rows) => {
         if(err){
           console.log(err);
           res.status(500).send({
@@ -83,11 +83,11 @@ router.post('/', (req, res) => {
               stat:"update success",
               data:{
                 "schedule_id" : scheduleData[0].schedule_id,
-                "type" : scheduleData[0].type,
+                "types" : scheduleData[0].types,
                 "app_person" : scheduleData[0].app_person,
                 "place" : scheduleData[0].place,
                 "content" : scheduleData[0].content,
-                "date" : scheduleData[0].date,
+                "dates" : scheduleData[0].dates,
                 "cycle" : scheduleData[0].cycle,
                 "user_id" : scheduleData[0].user_id
               }

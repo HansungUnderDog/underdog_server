@@ -8,7 +8,6 @@ console.log("showschedule");
 
 router.get('/', (req, res) => {
 console.log("asd");
-  var schedule_id = req.param('schedule_id');
   var user_id = req.session.user_id;
 	var taskArray = [
     (callback) =>{
@@ -33,25 +32,23 @@ console.log("asd");
 			});
 		},
     (connection, callback) => {
-			var selectAtdQuery = 'SELECT schedule_id, type, app_person, place, content, date, cycle, user_id FROM schedule WHERE (schedule_id, user_id)=(?, ?)';
-			connection.query(selectAtdQuery, [schedule_id, user_id], (err, rows) => {
-				if(err){
-					console.log(err);
-					res.status(500).send({
-						stat : "fail"
-					});
-					connection.release();
-          callback("fail");
-        } else{
-          res.status(201).send({
-            stat : "success",
-            data : rows
-          });
-					connection.release();
-          callback(null, "successful rows");
+        let selectAllScheduleQuery = 'SELECT schedule_id, types, app_person, place, content, dates, cycle, user_id FROM schedule WHERE user_id = ?';
+        connection.query(selectAllScheduleQuery, user_id, (err, rows) => {
+          if(err){
+            console.log(err);
+            res.status(501).send({
+              stat: "select error"
+            });
+          }else{
+            res.status(201).send({
+              stat : "success",
+              data : rows
+            });
+    				connection.release();
+            callback(null, "successful rows");
+          }
+        });
       }
-			});
-		}
 	];
 	async.waterfall(taskArray, (err, result) => {
 		if(err) console.log(err);

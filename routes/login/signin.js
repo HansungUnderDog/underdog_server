@@ -19,8 +19,10 @@ router.post('/', (req, res) => {
 
 	(callback) =>{
 		if(req.body.email && req.body.pwd){
+			console.log("연결됨");
 			callback(null);
 		}else{
+			console.log("연결됨");
 			res.status(501).send({
 				stat: "fail"
 			});
@@ -40,12 +42,14 @@ router.post('/', (req, res) => {
 		let checkIdAndPassword = query.checkIdAndPassword;
 		connection.query(checkIdAndPassword, mail, (err, userData) => {
 			if(err){
+				console.log("연결됨");
 				connection.release();
 				res.status(501).send({
 					stat: "mysql proc error : "
 				});
 				callback("mysql proc error ", null);
 			}else{
+				console.log("연결됨");
 				callback(null, userData);
 				connection.release();
 			}
@@ -53,13 +57,13 @@ router.post('/', (req, res) => {
 	},
 	(userData, callback) => {
 		if(userData.length === 0){
-			console.log(userData);
+			console.log("연결됨");
 			res.status(501).send({
 				stat: "nonidfail"
 			});
 			callback("login failll", null);
 		}else{
-			console.log("zzz" + userData[0]);
+			console.log("연결됨");
 			callback(null, userData);
 		}
 	},
@@ -71,6 +75,7 @@ router.post('/', (req, res) => {
 	},
 	(userData, hashed, callback) => {
 		if(userData[0].pwd === hashed) {
+			console.log("연결됨");
 			res.status(201).send({
 				stat: "success",
         data: {
@@ -84,6 +89,7 @@ router.post('/', (req, res) => {
     req.session.save();
     callback("login success", null);
 }else{
+	console.log("연결됨");
 	res.status(501).send({
 		stat: "pwdfail"
 	});

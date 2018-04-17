@@ -8,15 +8,15 @@ var moment = require('moment');
 
 router.post('/', (req,res) => {
 	let user_id = req.session.user_id;
-	let type = req.body.type;
+	let types = req.body.types;
 	let app_person = req.body.app_person;
 	let place = req.body.place;
 	let content = req.body.content;
-	let date = moment().toDate();
+	let dates = moment().toDate();
 	let cycle = req.body.cycle;
 	let query = {
-		insertQuery: 'INSERT INTO schedule (type, app_person, place, content, date, cycle, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-		selectQuery: 'SELECT schedule_id, type, app_person, place, content, date, cycle, user_id FROM schedule WHERE schedule_id=?'
+		insertQuery: 'INSERT INTO schedule (types, app_person, place, content, dates, cycle, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+		selectQuery: 'SELECT schedule_id, types, app_person, place, content, dates, cycle, user_id FROM schedule WHERE schedule_id=?'
 	};
 	console.log("fjfjfj");
 	let taskArray = [
@@ -46,7 +46,7 @@ router.post('/', (req,res) => {
 	},
 	(connection, callback) => {
 		let insertQuery = query.insertQuery;
-		connection.query(insertQuery, [type, app_person, place, content, date, cycle, user_id], (err, row) => {
+		connection.query(insertQuery, [types, app_person, place, content, dates, cycle, user_id], (err, row) => {
 			if(err){
 				res.status(500).send({
 					stat: "fail"
@@ -74,11 +74,11 @@ router.post('/', (req,res) => {
 						stat: "select success",
 						data: {
 							"schedule_id" : row.insertId,
-							"type" : rows[0].type,
+							"types" : rows[0].types,
 							"app_person" : rows[0].app_person,
 							"place" : rows[0].place,
 							"content" : rows[0].content,
-							"date" : rows[0].date,
+							"dates" : rows[0].dates,
 							"cycle" : rows[0].cycle,
 							"user_id" : rows[0].user_id
 						}
